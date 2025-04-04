@@ -69,4 +69,4 @@ def get_bot_reply(message):
     return responses.get(message, "I'm not sure. Can you clarify?")
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run(host='0.0.0.0', port=10000)
