@@ -1,33 +1,34 @@
 from flask import Flask, request, jsonify
 from flask_cors import CORS
-from transformers import pipeline, set_seed
 
 app = Flask(__name__)
-CORS(app)  # Allow access from frontends like Flutter or Web
+CORS(app)  # Allow Flutter to access this backend
 
-# GPT-2 setup for AI-generated replies
-chatbot = pipeline("text-generation", model="gpt2")
-set_seed(42)
-
-# ---------------------- Predefined Chat Route ----------------------
 @app.route("/chat", methods=["POST"])
-def rule_based_chat():
+def chat():
     user_message = request.json.get("message", "").lower().strip()
     reply = get_bot_reply(user_message)
     return jsonify({"reply": reply})
 
+@app.route("/suggestions", methods=["GET"])
+def get_suggestions():
+    suggestions = list(responses.keys())  # Use global responses dictionary
+    return jsonify({"suggestions": suggestions})
+
+
+
 def get_bot_reply(message):
     responses = {
-        "hello": "Hello! Welcome to our food-saving app. How can I assist you?",
-        "hi": "Hi there! How can I help you today?",
+        "hello": "Hello! Welcome to our food-saving app. How can i assist you?",
+        "hi": "Hi there! How can i help you today?",
         "good morning": "Good morning! How's your day going?",
-        "good evening": "Good evening! How can I assist you?",
+        "good evening": "Good evening! How can i assist you?",
         "what can you do": "Our app helps reduce food waste by connecting users with expired-food delivery services. We offer food expiry detection, trust verification for delivery persons, and a reward system.",
-        "how does the app work": "Our app scans food expiry dates using AI, connects users to delivery persons for food redistribution, and verifies trust levels to ensure safety. Would you like more details?",
-        "how do you check expiry": "We use AI-powered image recognition to analyze food labels and estimate expiry dates.",
+        "how does the app work": "Our app scans food expiry dates using Ai, connects users to delivery persons for food redistribution, and verifies trust levels to ensure safety. Would you like more details?",
+        "how do you check expiry": "We use Ai-powered image recognition to analyze food labels and estimate expiry dates.",
         "is it safe to eat expired food": "Some expired food is still safe to eat depending on the type and storage conditions. Our app categorizes food based on safety levels before redistribution.",
         "how do you verify delivery persons": "We verify delivery persons through identity checks, past records, and user ratings. Only trusted personnel can handle food deliveries.",
-        "how can i become a delivery person": "You can register as a delivery person in our app. We require ID verification and past experience details before approval.",
+        "how can i become a delivery person": "You can register as a delivery person in our app. We require iD verification and past experience details before approval.",
         "is delivery free": "Delivery is free for food donations. For other cases, a small service fee applies.",
         "do i get rewards": "Yes! Users earn rewards for reducing food waste. You can redeem points for discounts or donations to charities.",
         "how do rewards work": "You collect points when you donate or receive food through our platform. These points can be redeemed for discounts, vouchers, or charitable donations.",
@@ -56,33 +57,22 @@ def get_bot_reply(message):
         "how can i become a partner": "Businesses and charities can apply to become partners through our website or app.",
         "can i volunteer for food distribution": "Yes! Volunteers are always welcome to help with food deliveries and distribution.",
         "how do i earn trust points as a delivery person": "Trust points are earned based on successful deliveries, user reviews, and verification levels.",
-        "what if i miss a scheduled delivery": "If you miss a delivery, you can reschedule or contact support for assistance.",
+        "what if i miss a scheduled delivery": "if you miss a delivery, you can reschedule or contact support for assistance.",
         "can i donate money instead of food": "Yes, we accept monetary donations that go toward food distribution programs.",
         "does this app charge users": "The app is free, but some services may have a small fee to cover operational costs.",
         "how do i sign up": "Download the app, sign up with your email or phone number, and start using our services.",
-        "do i need an id to register as a delivery person": "Yes, we require ID verification for safety reasons.",
+        "do i need an iD to register as a delivery person": "Yes, we require iD verification for safety reasons.",
         "how do i report a suspicious user": "You can report users through their profile page or contact support.",
         "what happens if a delivery is delayed": "We notify users of any delays and provide updates through the app.",
         "can i choose the food i want to receive": "Yes, you can select from available food donations based on your preferences.",
         "how do i contact the food donor": "You can chat with the donor directly within the app.",
         "is there a limit to how much food i can donate": "There is no limit, but we encourage responsible donations based on demand.",
         "do i get a receipt for my donations": "Yes, you will receive a digital receipt in your account.",
-        "how does the app match donors with recipients": "Our AI system matches donors with nearby recipients based on food type and location.",
+        "how does the app match donors with recipients": "Our Ai system matches donors with nearby recipients based on food type and location.",
         "can i block a user": "Yes, you can block or report users if you experience any issues.",
         "how do i leave a review for a delivery": "After completing a delivery, you can rate and review the experience in the app."
     }
-    return responses.get(message, "I'm not sure. Can you clarify?")
+    return responses.get(message, "i'm not sure. Can you clarify?")
 
-# ---------------------- AI Chat Route ----------------------
-@app.route("/aichat", methods=["POST"])
-def ai_chat():
-    data = request.json
-    user_message = data.get("message", "")
-    result = chatbot(f"User: {user_message}\nBot:", max_length=100, num_return_sequences=1)
-    reply = result[0]['generated_text'].split("Bot:")[-1].strip()
-    return jsonify({"response": reply})
-
-
-# ---------------------- Run the App ----------------------
 if __name__ == "__main__":
-    app.run(host='0.0.0.0', port=10000, debug=True)
+    app.run(debug=True)
